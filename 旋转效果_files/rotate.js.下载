@@ -1,0 +1,284 @@
+﻿/**
+ * Created by cntv on 2017/3/2.
+ */
+$(".rotate_all").hide();
+$("#dp_qh").on("click",function(event){
+    event.preventDefault();
+    var _xicon = $(this).find("i");
+    var _xspan = $(this).find("span");
+    if($(this).hasClass("sq")){
+        _xspan.text("平铺模式");
+        /* _xicon.removeClass("fa fa-navicon");
+         _xicon.addClass("fa fa-retweet");*/
+        _xicon.addClass("icon-qh");
+        $(".pic").show();
+        $(".rotate_all").hide();
+        $(".map-chart").show();
+        $(this).removeClass("sq");
+    }else{
+        _xspan.text("旋转模式");
+        /*_xicon.removeClass("fa fa-retweet");
+         _xicon.addClass("fa fa-navicon");*/
+        _xicon.addClass("icon-qh");
+        $(".rotate_all").show();
+        $(".pic").hide();
+        $(".map-chart").hide();
+        $(this).addClass("sq");
+    }
+});
+$(function(){
+    var imgL=$(".pic .img").size();
+    console.log(imgL);
+    var deg=360/imgL;
+    var roY=0,roX=-8.2;
+    var xN=0,yN=0;
+    var play=null;
+
+    $(".pic .img").each(function(i){
+        $(this).css({
+            "transform":"rotateY("+i*deg+"deg) translateZ(450px)"	});$(this).attr('ondragstart','return false');
+
+    });
+
+    setTimer(30,0.2);
+    function setTimer(interVal,velocity){
+        play=setInterval(function(){
+
+            roY=roY-velocity;
+            if (roY<=-360)
+                roY=0;
+            $('.pic').css({
+                transform:'perspective(2000px) rotateX('+roX+'deg) rotateY('+roY+'deg)'
+            });
+        },interVal);
+    }
+    $(".pic .img").mousedown(function(ev){
+        var x_=ev.clientX;
+        var y_=ev.clientY;
+        clearInterval(play);
+        $(this).bind('mousemove',function(ev){
+            var x=ev.clientX;
+            var y=ev.clientY;
+            xN=x-x_;
+            yN=y-y_;
+
+            roY+=xN*0.2;
+            roX-=yN*0.1;
+            $('.pic').css({
+                transform:'perspective(2000px) rotateX('+roX+'deg) rotateY('+roY+'deg)'
+            });
+            x_=ev.clientX;
+            y_=ev.clientY;
+
+        });
+    }).mouseout(function(){
+        $(this).unbind('mousemove');
+        /*   play=setInterval(function(){
+         roY=roY-0.2;
+         if (roY<=-360)
+         roY=0;
+         $('.pic').css({
+         transform:'perspective(2000px) rotateX('+roX+'deg) rotateY('+roY+'deg)'
+         });
+
+         },30); */
+        setTimer(30,0.2);
+
+    }).mouseover(function(){
+        clearInterval(play);
+    });
+    var imgList=$('.img');
+    var title;
+    var id;
+    for(var i=0;i<imgList.length;i++){
+        $(imgList[i]).attr('id',i);
+        imgList[i].onclick=function(){
+            title=$(this).find('.caption h3').html();
+            id=$(this).attr('id');
+            if($(this).hasClass('report')){
+                $('#alert').find('p.report').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://report.xinhua-news.cn');
+                //$('#alert').find('a.big-screen').attr('href','https://reportls.xinhua-news.cn/largeScreen_bdzh/reportHome.html');
+                $('#alert').find('a.big-screen').attr({'href':'https://reportls.xinhua-news.cn/largeScreen_bdzh/reportHome.html','target':'_blank'});
+
+            }else if($(this).hasClass('manager')){
+                $('#alert').find('p.manager').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://demo.bms.xinhua.io/xhs/html/login.html ');
+                $('#alert').find('a.big-screen').attr('href','http://ywglscreen.xinhua.io/xhs/html/data_bi_lscr.html')
+            } else
+            if($(this).hasClass('news')){
+                $('#alert').find('p.news').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://home.xinhua-news.com/');
+                $('#alert').find('a.big-screen').attr('href','http://analy.xinhua-news.com/xh_analy/screen/toScreen1')
+            } else
+            if($(this).hasClass('influence')){
+                $('#alert').find('p.influence').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://111.203.35.59');
+                $('#alert').find('a.big-screen').attr('href','http://111.203.35.59/dist/screen/newScreen.html');
+            }else
+            if($(this).hasClass('statistic')) {
+                $('#alert').find('p.statistic').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://124.205.229.242 ');
+                $('#alert').find('a.big-screen').attr('href','http://statistic.xinhua-news.cn/largeScreen_al/mod10?embed=1');
+            } else
+            if($(this).hasClass('operation')){
+                $('#alert').find('p.operation').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://172.21.65.125/');
+                $('#alert').find('a.big-screen').attr({'href':'http://172.21.65.124/xinhuashe/world.html','target':'_blank'});
+            } else
+            if($(this).hasClass('copyright')){
+                $('#alert').find('p.copyright').addClass('show').siblings('p').removeClass('show');
+                $('#alert').find('a.pc').attr('href','http://cpright.xinhua-news.cn');
+                $('#alert').find('a.big-screen').attr('href','http://cpright.xinhua-news.cn/bigScreen/');
+            }else
+            if($(this).hasClass('newOA')){
+                $('#alert').find('p.newOA').addClass('show').siblings('p').removeClass('show');
+            }else
+            if($(this).hasClass('data')){
+                $('#alert').find('p.data').addClass('show').siblings('p').removeClass('show');
+            }else
+            if($(this).hasClass('user')){
+                $('#alert').find('p.user').addClass('show').siblings('p').removeClass('show');
+            }
+
+            $('#alert').find('.bottom h3').html($(this).find('h3').html()+"简介");
+            layer.open({
+                type: 1,
+                title:'',
+                skin: 'layui-layer-reset', //加上边框
+                area: ['1080px', '590px'], //宽高
+                content: $('#alert').html(),
+                success:function(layer){
+                    clearInterval(play);
+                }
+
+            });
+            $('a.big-screen').click(function(){
+                setFocus(title,id);
+            });
+        }
+
+    }
+
+
+});
+(function ($) {
+
+    require.config({
+        paths: {
+            "echarts": "../js/bi_lscr/echarts",
+            "echarts-x": "../js/bi_lscr/echarts-x"
+        }
+    });
+    init3DMap('map-chart');
+    function init3DMap(id) {
+        require([
+            "echarts",
+            "echarts-x",
+            "echarts/chart/map",
+            "echarts-x/chart/map3d"
+        ], function (ec) {
+            var chart = ec.init(document.getElementById(id));
+
+            var max = -Infinity;
+            var min = Infinity;
+            geodata = geodata.map(function (dataItem) {
+                max = Math.max(dataItem[2], max);
+                min = Math.min(dataItem[2], min);
+                if ($.isArray(dataItem)) {
+                    return {
+                        geoCoord: dataItem.slice(0, 2),
+                        value: dataItem[2] || 4
+                    }
+                }
+
+            });
+            var _arr = [], _ar2 = [], i = 0;
+            geodata.forEach(function (dataItem) {
+
+                if (!dataItem || !dataItem.value) {
+                    return;
+                }
+                dataItem.symbolSize = (dataItem.value - min) / (max - min) * 18 + 2;
+                if (dataItem.symbolSize > 8) {
+                    if (i % 2 == 0) {
+                        _arr.push(dataItem);
+                    }
+                    else {
+                        _ar2.push(dataItem);
+                    }
+
+                }
+                i++;
+            });
+
+            chart.setOption({
+                series: [
+                    {
+                        type: 'map3d',
+                        baseLayer: {
+                            backgroundColor: "",
+                            backgroundImage: "../js/bi_lscr/echarts-x/asset/earth2.jpg",
+                            quality: "high"
+                        },
+                        hoverable: false,
+                        itemStyle: {
+                            normal: {
+                                borderColor: '#001320',
+                                areaStyle: {
+                                    color: "rgba(0,0,0,0)"
+                                }
+                            }
+                        },
+                        data: [
+                            {}
+                        ],
+                        markPoint: {
+                            large: true,
+                            effect: {
+                                show: true,
+                                shadowBlur: 0.4
+                            },
+                            symbol: "circle",
+                            data: _arr,
+                            itemStyle: {
+                                normal: {
+                                    label: {show: false},
+                                    color: "#0893e4"
+                                },
+                                emphasis: {
+                                    label: {position: 'top'}
+                                }
+                            }
+                        }
+                    },
+                    {
+                        type: 'map3d',
+                        data: [
+                            {}
+                        ],
+                        markPoint: {
+                            large: true,
+                            effect: {
+                                show: true,
+                                shadowBlur: 0.4
+                            },
+                            symbol: "circle",
+                            data: _ar2,
+                            itemStyle: {
+                                normal: {
+                                    label: {show: false},
+                                    color: "#d4c102"
+                                },
+                                emphasis: {
+                                    label: {position: 'top'}
+                                }
+                            }
+                        }
+                    }
+                ]
+            });
+        });
+    }
+
+})(jQuery);

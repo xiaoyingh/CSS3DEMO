@@ -1,0 +1,117 @@
+/**
+ * Created by think on 2016/10/23.
+ */
+
+
+(function (factory) {
+
+    // CommonJS/NodeJS
+    if (typeof require === 'function' && typeof exports === "object" && typeof module === "object") {
+        factory(require, exports, module);
+    }
+    // CMD/SeaJS
+    else if (typeof define === "function") {
+        define(factory);
+    }
+    else {
+        window.exports = window.utils = {};
+
+        factory(function () {
+        }, window.utils, window);
+    }
+
+}(function (require, exports, module) {
+
+    var utils = module.exports;
+
+    var count = 0;
+    utils.getUniqueId = function (prefix) {
+        var time = new Date();
+        time.getTime()
+        prefix = prefix || "id_";
+        return prefix + time.getTime() + (count++);
+    }
+
+    utils.getRoot = function () {
+        var curWwwPath = window.document.location.href;
+        var pathName = window.document.location.pathname;
+        var pos = curWwwPath.indexOf(pathName);
+        var localhostPath = curWwwPath.substring(0, pos);
+        var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+        //console.log(projectName+"|"+localhostPath);
+        if (projectName.indexOf("jsp") >= 0)
+            return localhostPath;
+        else
+            return (localhostPath + projectName);
+    }
+    utils.getAjax = function (url, params, callBack, dataType) {
+        var defaults = {}
+
+        if (typeof  params == 'function') {
+            callBack = params;
+        }
+        else if (typeof  params == 'object') {
+            var params = $.extend(defaults, params);
+        }
+        if (typeof  callBack == 'string') {
+            dataType = callBack;
+        }
+
+        return $.ajax({
+            url: this.getRoot().indexOf("/") > 0 ? this.getRoot() + url : url,
+            type: "post",
+            dataType: "json",
+            data: params,
+            success: function (res) {
+                if (typeof callBack == "function") callBack(res);
+            },
+            error: function (res) {
+                if (res.responseText) {
+                    var s = res.responseText.indexOf("<script type='text/javascript'>") + 31;
+                    var e = res.responseText.indexOf("</script>");
+                    var jsStr = res.responseText.substring(s, e);
+                    var e1 = jsStr.indexOf("returnUrl=");
+                    if (e1 > 0) {
+                        eval(jsStr.substring(0, e1) + "'");
+                    } else {
+                        eval(jsStr);
+                    }
+                } else
+                    console.log(res);
+                //$.mask.hide();
+            }
+        });
+    }
+    utils.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+    utils.dateFormat = function (data, format) {
+	if(!isNaN(data)){
+	    data = new Date(data);
+	}
+        if (data instanceof Date) {
+            var o = {
+                "M+": data.getMonth() + 1,               //月份
+                "d+": data.getDate(),                    //日
+                "h+": data.getHours(),                   //小时
+                "m+": data.getMinutes(),                 //分
+                "s+": data.getSeconds(),                 //秒
+                "q+": Math.floor((data.getMonth() + 3) / 3), //季度
+                "S": data.getMilliseconds()             //毫秒
+            };
+            if (/(y+)/.test(format))
+                format = format.replace(RegExp.$1, (data.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(format))
+                    format = format.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return format;
+        }
+        return '';
+
+    }
+
+
+}));
